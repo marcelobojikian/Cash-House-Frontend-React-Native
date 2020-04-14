@@ -10,6 +10,9 @@ npm-debug.*
 web-build/
 web-report/
 
+assets/*
+src/assets/logo*
+
 yarn-error.log
 yarn.lock
 
