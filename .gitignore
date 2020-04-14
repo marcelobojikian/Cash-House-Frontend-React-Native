@@ -10,11 +10,11 @@ npm-debug.*
 web-build/
 web-report/
 
-assets/icon.png
-assets/splash.png
-src/assets/logo.png
-src/assets/logo@2x.png
-src/assets/logo@3x.png
+/assets/icon.png
+/assets/splash.png
+/src/assets/logo.png
+/src/assets/logo@2x.png
+/src/assets/logo@3x.png
 
 yarn-error.log
 yarn.lock
