@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, View, Text, TextInput, Picker, Image, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
+import { t } from 'i18n-js';
+
+const options = { scope: "pages.Transactions.New" };
 
 import logoImg from '../../../assets/logo.png';
 import { Button, Loading } from '../../../components/common';
-import api from '../../../services/api';
+import { get, post } from '../../../services/api';
 
 import styles from '../stylesScreen';
 
@@ -26,34 +29,33 @@ export default function NewTransaction () {
     function createTransaction(action) {
 
         if (!cashierId || cashierId < 0) {
-            Alert.alert('Falha ao enviar', 'Cashier invalido')
+            Alert.alert(t('alert.title.invalid field'), t('invalid cashier'))
             return;
         }
 
         if (!value || value <= 0) {
-            Alert.alert('Falha ao enviar', 'Valor invalido')
+            Alert.alert(t('alert.title.invalid field'), t('invalid amount'))
             return;
         }
 
         const cashierSelected = cashiers.find(item => item.id === cashierId);
+        const actionI18n = action === 'deposit' ? t('do deposit') : t('do withdraw')
 
         Alert.alert(
-            "Confirmar operação. ",
-            `Você deseja ${action === 'deposit' ? 'depositar' : 'retirar'} da caixinha '${cashierSelected.name}' ?`,
+            t('alert.title.confirm operation'),
+            t('action.confirmation', { action: actionI18n, cashier: cashierSelected.name, ...options}),
             [
-                { text: 'Mais tarde', 
+                { text: t('alert.button.ask me later'), 
                     onPress: async () => {
                         setLoading(true)
                         await save(action);
-                        navigation.goBack();
                     } 
                 },
-                { text: 'Cancelar', onPress: () => {} , style: 'cancel' },
-                { text: 'OK', 
+                { text: t('alert.button.cancel'), onPress: () => {} , style: 'cancel' },
+                { text: t('alert.button.confirm'), 
                     onPress: async () => {
                         setLoading(true)
                         await send(action);
-                        navigation.goBack();
                     } 
                 },
             ],
@@ -63,40 +65,61 @@ export default function NewTransaction () {
     }
 
     async function save(action) {
-        
-        await api.post(`/api/v1/transactions/${action}`, {
+
+        const { error, doLogin, message } = await post(`/transactions/${action}`, {
             cashier: cashierId,
             value: value
         });
+        
+        if(doLogin){
+            navigation.navigate('Sign',{ message });
+            return
+        }
+        
+        if(error){
+            alert(message)
+            setLoading(false)
+            return
+        }
+
+        navigation.goBack();
 
     }
 
     async function send(action) {
 
-        const response = await api.post(`/api/v1/transactions/${action}`, {
+        const { error, doLogin, message, data } = await post(`/transactions/${action}`, {
             cashier: cashierId,
             value: value
         });
+        
+        if(doLogin){
+            navigation.navigate('Sign',{ message });
+            return
+        }
+        
+        if(error){
+            alert(message)
+            setLoading(false)
+            return
+        }
 
-        const { id } = response.data;
+        await post(`/transactions/${data.id}/send`);
 
-        await api.post(`/api/v1/transactions/${id}/send`);
+        navigation.goBack();
 
     }
 
     async function load() {
-        
-        const response = await api.get('/api/v1/cashiers');
-        setCashiers(response.data)
 
-    }
-
-    const renderLoading = () => {
-        if (loading) {
-            return (
-                <Loading />
-            );
+        const { error, doLogin, message, data } = await get('/cashiers');
+        if(error || doLogin){
+            navigation.navigate('Sign',{ message });
+            return
+        } else {
+            setCashiers(data)
         }
+
     }
 
     useEffect(() => {
@@ -109,7 +132,7 @@ export default function NewTransaction () {
             enabled={Platform.OS === 'ios'}
             style={styles.container}>
 
-            {renderLoading()}
+            { loading && <Loading /> }
 
             <ScrollView>
 
@@ -123,20 +146,20 @@ export default function NewTransaction () {
                 </View>
                 <View style={styles.transaction}>
 
-                    <Text style={[styles.transactionProperty, { marginTop: 0 }]}>Caixinha</Text>
+                    <Text style={[styles.transactionProperty, { marginTop: 0 }]}>{t('cashier')}</Text>
                     <Picker style={styles.picker}
                         selectedValue={cashierId}
                         onValueChange={(itemValue) => setCashierId(itemValue)} >
-                        <Picker.Item key={'0'} value={null} label={'Selecione um item'} />
+                        <Picker.Item key={'0'} value={null} label={t('select an item')} />
                         {cashiers.map((cashier) => {
                             return <Picker.Item key={cashier.id} value={cashier.id} label={cashier.name} />
                         })}
                     </Picker>   
                     
-                    <Text style={styles.transactionProperty}>Valor</Text>
+                    <Text style={styles.transactionProperty}>{t('amount')}</Text>
                     <TextInput style={styles.transactionValue}
                         autoCapitalize="none"
-                        placeholder={'Valor da transação'}
+                        placeholder={t('transaction amount')}
                         placeholderTextColor="#999"
                         keyboardType={'numeric'}
                         value={String(value)}
@@ -147,17 +170,17 @@ export default function NewTransaction () {
 
                 <View style={styles.actionBox}>
 
-                    <Text style={styles.actionTitle}>Criando transação.</Text>
-                    <Text style={styles.actionDescription}>Essa transação sera enviada para a pessoa que administra as caixinhas, assim que voce entregar o dinheiro ao mesmo ela sera finalizada.</Text>
+                    <Text style={styles.actionTitle}>{t('action.title', options)}</Text>
+                    <Text style={styles.actionDescription}>{t('action.description', options)}</Text>
 
                     <View style={styles.actions}>
                         <Button style={styles.action} 
                                 onPress={() => {createTransaction('deposit')}}>
-                            Depositar
+                            {t('deposit')}
                         </Button>
                         <Button style={styles.action} 
                                 onPress={() => {createTransaction('withdraw')}}>
-                            Retirar
+                            {t('withdraw')}
                         </Button>
                     </View>
 

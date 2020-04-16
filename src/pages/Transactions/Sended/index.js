@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
+import { t } from 'i18n-js';
+
+const options = { scope: "pages.Transactions.Sended" };
 
 import logoImg from '../../../assets/logo.png';
 import { Button, Loading } from '../../../components/common';
-import api from '../../../services/api';
+import { post } from '../../../services/api';
 
 import styles from '../stylesScreen';
 
@@ -25,15 +28,14 @@ export default function SendedTransaction () {
     function finishTransaction() {
 
         Alert.alert(
-            "Confirmar operação. ",
-            `Você deseja finalizar essa da transação ?`,
+            t('alert.title.confirm operation'),
+            t('action.confirmation.finish', options),
             [
-                { text: 'Cancelar', onPress: () => {} , style: 'cancel' },
-                { text: 'OK', 
+                { text: t('alert.button.cancel'), onPress: () => {} , style: 'cancel' },
+                { text: t('alert.button.confirm'), 
                     onPress: async () => {
                         setLoading(true)
-                        await api.post(`/api/v1/transactions/${transaction.id}/finish`);
-                        navigation.goBack();
+                        await doAction(`/transactions/${transaction.id}/finish`);
                     } 
                 },
             ],
@@ -45,15 +47,14 @@ export default function SendedTransaction () {
     function cancelTransaction() {
 
         Alert.alert(
-            "Confirmar operação. ",
-            `Você deseja cancelar essa da transação ?`,
+            t('alert.title.confirm operation'),
+            t('action.confirmation.cancel', options),
             [
-                { text: 'Cancelar', onPress: () => {} , style: 'cancel' },
-                { text: 'OK', 
+                { text: t('alert.button.cancel'), onPress: () => {} , style: 'cancel' },
+                { text: t('alert.button.confirm'), 
                     onPress: async () => {
                         setLoading(true)
-                        await api.post(`/api/v1/transactions/${transaction.id}/cancel`);
-                        navigation.goBack();
+                        await doAction(`/transactions/${transaction.id}/cancel`);
                     } 
                 },
             ],
@@ -62,18 +63,29 @@ export default function SendedTransaction () {
         
     }
 
-    const renderLoading = () => {
-        if (loading) {
-            return (
-                <Loading />
-            );
+    async function doAction(url) {
+
+        const { error, doLogin, message } = await post(url);
+        
+        if(doLogin){
+            navigation.navigate('Sign',{ message });
+            return
         }
+        
+        if(error){
+            alert(message)
+            setLoading(false)
+            return
+        }
+
+        navigation.goBack();
+
     }
 
     return (
         <View style={styles.container} >
 
-            {renderLoading()}
+        { loading && <Loading /> }
 
             <View style={styles.header}>
                 <Image source={logoImg} />
@@ -85,10 +97,10 @@ export default function SendedTransaction () {
             </View>
             <View style={styles.transaction}>
 
-                <Text style={[styles.transactionProperty, { marginTop: 0 }]}>Caixinha</Text>
+                <Text style={[styles.transactionProperty, { marginTop: 0 }]}>{t('cashier')}</Text>
                 <Text style={styles.transactionValue}>{transaction.cashier.name}</Text>
                 
-                <Text style={styles.transactionProperty}>Valor</Text>
+                <Text style={styles.transactionProperty}>{t('amount')}</Text>
                 <Text style={styles.transactionValue}>
                     {Intl.NumberFormat('en-IE', {
                         style: 'currency',
@@ -100,23 +112,22 @@ export default function SendedTransaction () {
 
             <View style={styles.actionBox}>
 
-                <Text style={styles.actionTitle}>Transação quase concluida.</Text>
+                <Text style={styles.actionTitle}>{t('action.title', options)}</Text>
                 <Text style={styles.actionDescription}>
-                    Essa trasaction foi enviada e esta pronta para ser finalizada, 
-                    nao se esqueca de 
-                    <Text style={styles.textBold}>{transaction.action == 'DEPOSIT' ? ' DEPOSITAR ' : ' RETIRAR ' }</Text>
-                    o dinheiro da caixinha 
-                    <Text style={styles.textBold}> "{transaction.cashier.name}".</Text>.
+                    {t('action.description.first', options)}
+                    <Text style={styles.textBold}>{transaction.action === 'DEPOSIT' ? ` ${t('do deposit').toUpperCase()} ` : ` ${t('do withdraw').toUpperCase()} ` }</Text>
+                    {t('action.description.second', options)}
+                    <Text style={styles.textBold}> "{transaction.cashier.name}".</Text>
                 </Text>
 
                 <View style={[styles.actions, {}]}>
                     <Button style={styles.action} 
                             onPress={() => {finishTransaction()}}>
-                        Finalizar
+                        {t('finish')}
                     </Button>
                     <Button style={[styles.action, { backgroundColor: '#666'}]} 
                             onPress={() => {cancelTransaction()}}>
-                        Cancelar
+                        {t('cancel')}
                     </Button>
 
                 </View>

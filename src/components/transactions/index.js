@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, SectionList, TouchableOpacity } from 'react-native';
+import { t } from 'i18n-js';
 
-import api from '../../services/api';
+const options = { scope: "components.transactions" };
+
+import { get } from '../../services/api';
 import styles from './styles';
 
 const ListSection = ({ refreshing, status, action, cashier_id, firstField, secondField, thirdField, onPress, style }) => {
@@ -70,15 +73,15 @@ const ListSection = ({ refreshing, status, action, cashier_id, firstField, secon
 
         setLoading(true);
 
-        const response = await api.get('/api/v1/transactions', {
+        const { status, data } = await get('/transactions', {
             params: params
         })
 
-        if(response.status === 204){
+        if(status === 204){
             return;
         }
 
-        const { content, last, first, number } = response.data;
+        const { content, last, first, number } = data
         
         if(!first){
             var lastGroup = transactions[transactions.length-1];
@@ -100,7 +103,7 @@ const ListSection = ({ refreshing, status, action, cashier_id, firstField, secon
         if (position === 'name') {
             return item.assigned.nickname || item.assigned.email
         } else if (position === 'owner') {
-            return 'Owner: ' + (item.assigned.nickname || item.assigned.email)
+            return t('owner', {name: (item.assigned.nickname || item.assigned.email), ...options})
         } else if (position === 'action') {
             return item.action
         } else if (position === 'cashier') {
@@ -113,7 +116,7 @@ const ListSection = ({ refreshing, status, action, cashier_id, firstField, secon
         } else if (position === 'status') {
             return item.status
         } else if (position === 'creator') {
-            return 'Created by: ' + (item.createdBy.username || item.createdBy.email)
+            return t('created by', {name: (item.createdBy.username || item.createdBy.email), ...options})
         } else {
             return '? undefined ?'
         }
