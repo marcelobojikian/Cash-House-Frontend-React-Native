@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { KeyboardAvoidingView, Platform, View, Text, Image, Alert } from 'react-native';
-import base64 from 'react-native-base64';
+import { t } from 'i18n-js';
 
 import logoImg from '../../assets/logo.png';
-import { AsyncStorage } from 'react-native';
 
 import { Button, Input, Loading } from '../../components/common';
 
-import api from '../../services/api';
+import { doLogin, get } from '../../services/api';
 import styles from './styles';
 
 const SignIn = () => {
 
     const { navigate } = useNavigation();
     const { params } = useRoute();
+
+    const messageParam = params ? params.message : null;
 
     const INITIAL = { mail: '@mail.com', password: 'test' }
 
@@ -23,55 +24,29 @@ const SignIn = () => {
 
     const [login, setLogin] = useState(INITIAL);
 
-    useEffect(() => {
-
-        if(params && params.message){
-            setMessage(params.message)
-        }
-
-        setLoading(false)
-
-    }, []);
-
     const _signInAsync = async () => {
 
         const { mail, password } = login;
 
         setMessage(null)
         if (!mail || !password) {
-            setMessage('Mail or Password is empty')
+            setMessage(t('email or password is empty'))
             return
         }
 
-        const params = new URLSearchParams();
-
-        params.append('client_id', 'cueva');
-        params.append('grant_type', 'password');
-        params.append('username', mail);
-        params.append('password', password);
-        
-        var basicAuth = 'Basic ' + base64.encode('cueva:noop');
-                
-        AsyncStorage.setItem('userToken', basicAuth);
-        AsyncStorage.setItem('dashboard', '1');
-
         setLoading(true)
-        await api.post('/oauth/token', params).then(async(response) => {
-
-            const { access_token } = response.data
-
-            AsyncStorage.setItem('userToken', 'Bearer ' + access_token);
-
-            const responseDetail = await api.get('/api/v1/users/self/detail');
-            const detail = responseDetail.data
-            navigate('Transactions', { detail });
-
-        }).catch((error) => {
-            console.info(error)
-            setMessage(error.error_description)
-        }).finally(() => {
+        const { error, message } = await doLogin(mail, password)
+        
+        if(error){
+            setMessage(message)
             setLoading(false)
-        });
+            return
+        }
+
+        const {data: detail} = await get('/users/self/detail');
+        navigate('Transactions', { detail });
+
+        setLoading(false)
 
     };
 
@@ -81,7 +56,7 @@ const SignIn = () => {
 
         setMessage(null)
         if (!mail || !password) {
-            setMessage('Mail or Password is empty')
+            setMessage(t('email or password is empty'))
             return
         }
 
@@ -91,7 +66,7 @@ const SignIn = () => {
         }
 
         setLoading(true)
-        await api.post('/register', {
+        /*await api.post('/register', {
             mail, password
         }).then((response) => {
             _signInAsync()
@@ -99,7 +74,7 @@ const SignIn = () => {
             setMessage(error)
         }).finally(() => {
             setLoading(false)
-        });
+        });*/
 
     };
 
@@ -118,55 +93,40 @@ const SignIn = () => {
 
     };
 
-    const renderError = () => {
-        if (message) {
-            return (
-                <Text style={{ color: 'red' }}>{message}</Text>
-            );
-        }
-    }
-
-    const renderLoading = () => {
-        if (loading) {
-            return (
-                <Loading />
-            );
-        }
-    }
-
     return (
         <KeyboardAvoidingView 
             behavior={'padding'}
             enabled={Platform.OS === 'ios'}
             style={styles.container}>
 
-            {renderLoading()}
+            {loading && <Loading />}
 
             <Image source={logoImg} style={styles.logo} />
 
             <Input style={styles.input}
-                placeholder={'E-mail'}
+                placeholder={t('email')}
                 value={login.mail}
                 onChangeText={(value) => { setLogin({ ...login, mail: value }) }} />
 
             <Input style={styles.input}
-                placeholder={'Password'}
+                placeholder={t('password')}
                 value={login.password}
                 secureTextEntry={true}
                 onChangeText={(value) => { setLogin({ ...login, password: value }) }} />
 
-            {renderError()}
+            { message && <Text style={{ color: 'red' }}>{message}</Text> }
+            { messageParam && <Text style={{ color: 'red' }}>{messageParam}</Text> }
 
             <Button style={styles.signin}
-                onPress={_signInAsync}>Sign in</Button>
+                onPress={_signInAsync}>{t('sign in')}</Button>
 
             <View style={styles.alternatives}>
 
                 <Button style={styles.regiser}
-                    onPress={_registerAsync}>Register</Button>
+                    onPress={_registerAsync}>{t('register')}</Button>
 
                 <Button style={styles.recover}
-                    onPress={_recoverAsync}>Recover password</Button>
+                    onPress={_recoverAsync}>{t('recover password')}</Button>
 
             </View>
 

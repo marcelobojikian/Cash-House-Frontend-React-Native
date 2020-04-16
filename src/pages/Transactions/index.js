@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { View, Text, TouchableOpacity } from 'react-native';
+import I18n, { t } from 'i18n-js';
 
 import { Button } from '../../components/common';
 import ListSection from '../../components/transactions';
 
-import api from '../../services/api';
+import { get } from '../../services/api';
 
 import styles from './styles';
 
@@ -38,16 +39,20 @@ export default function Transactions () {
 
     }
 
-    function navigateToCreate() {
+    async function navigateToCreate() {
         setRefreshing(false)
         navigation.navigate('New');
     }
 
     async function loadTransactions() {
 
-        const response = await api.get('/api/v1/transactions');
-        const { totalElements } = response.data;
-        setTotal(totalElements);
+        const { error, doLogin, message, data } = await get('/transactions');
+        if(error || doLogin){
+            navigation.navigate('Sign',{ message });
+            return
+        } else {
+            setTotal(data.totalElements || 0);
+        }
 
     }
 
@@ -66,22 +71,21 @@ export default function Transactions () {
         <View style={styles.container} >
             <View style={styles.header}>
                 <Button style={styles.headerAction}
-                    onPress={navigateToCreate}>Adicionar</Button>
+                    onPress={navigateToCreate}>!Adicionar!</Button>
                 <Text style={styles.headerText}>
-                    Total de <Text style={styles.headerTextBold}>{total ? total: 0} transações</Text>.
+                    {t('total of')} <Text style={styles.headerTextBold}>{t('transaction', { count: total, formatted_number: I18n.toNumber(total, { precision: 0 }) })}</Text>.
                 </Text>
             </View>
 
             <View style={styles.header}>
-                <Text style={styles.title}>Bem-vindo</Text>
+                <Text style={styles.title}>!Bem-vindo!</Text>
                 <TouchableOpacity onPress={ () =>{ setInformation(true) } }>
                     <MaterialCommunityIcons size={30} name={'information'} color={'#AAAAAA'} />
                 </TouchableOpacity>
             </View>
             
-            <Text style={styles.description}>Escolha uma transação para alterar seu estado.</Text>
+            <Text style={styles.description}>!Escolha uma transação para alterar seu estado.!</Text>
             
-
             <ListSection style={styles.transactionList} refreshing={refreshing}
                 firstField={'name'}
                 secondField={'cashier'}
@@ -94,23 +98,23 @@ export default function Transactions () {
 
                     <View style={styles.informationBox}>
                         <MaterialCommunityIcons size={40} name={'coin'} color={'#93A9FF'} />
-                        <Text style={styles.informationProperty}>Criado</Text>
+                    <Text style={styles.informationProperty}>{t('created')}</Text>
                     </View>
                     <View style={styles.informationBox}>
                         <MaterialCommunityIcons size={40} name={'coin'} color={'#C0BF3F'} />
-                        <Text style={styles.informationProperty}>Enviado</Text>
+                        <Text style={styles.informationProperty}>{t('sended')}</Text>
                     </View>
                     <View style={styles.informationBox}>
                         <MaterialCommunityIcons size={40} name={'coin'} color={'#707070'} />
-                        <Text style={styles.informationProperty}>Deletado</Text>
+                        <Text style={styles.informationProperty}>{t('deleted')}</Text>
                     </View>
                     <View style={styles.informationBox}>
                         <MaterialCommunityIcons size={40} name={'coin'} color={'#00923b'} />
-                        <Text style={styles.informationProperty}>Finalizado</Text>
+                        <Text style={styles.informationProperty}>{t('finished')}</Text>
                     </View>
 
                     <TouchableOpacity onPress={ () =>{ setInformation(null) } }>
-                        <Text style={styles.informationClose}>Voltar</Text>
+                        <Text style={styles.informationClose}>{t('back')}</Text>
                     </TouchableOpacity>
 
                 </View>

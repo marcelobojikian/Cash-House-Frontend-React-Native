@@ -1,0 +1,98 @@
+{
+    "components": {
+        "transactions": {
+            "owner": "Dono: %{name}",
+            "created by": "Criado por %{name}"
+        }
+    },
+
+    "email": "E-mail",
+    "password": "Senha",
+    "email or password is empty": "E-mail ou senha está vazia",
+    "sign in": "Entrar",
+    "register": "Registrar",
+    "recover password": "Recuperar senha",
+
+    "total of": "Total de",
+    "transaction":{
+        "one": "1 transação",
+        "other": "{{formatted_number}} transações",
+        "zero": "0 transações"
+    },
+    "created": "Criado",
+    "sended": "Enviado",
+    "deleted": "Deletado",
+    "finished": "Finalizado",
+    "back": "Voltar",
+    
+    "cashier": "Caixinha",
+    "select an item": "Selecione um item",
+    "amount": "Valor",
+    "transaction amount": "Valor da transação",
+
+    "alert": {
+        "title": {
+            "confirm operation": "Confirmar operação.",
+            "invalid field": "Campo inválido"
+        },
+        "button": {
+            "ask me later": "Mais tarde",
+            "cancel": "Cancelar",
+            "confirm": "ok"
+        }
+    },
+
+    "pages": {
+        "Transactions": {
+            "New": {
+                "action": {
+                    "title":"Criando transação.",
+                    "description": "Essa transação sera enviada para a pessoa que administra as caixinhas, assim que você entregar o dinheiro essa transação ela sera finalizada.",
+                    "confirmation": "Você deseja %{action} em '%{cashier}' ?"
+                }
+            },
+            "Created": {
+                "action": {
+                    "title":"Transação pendente.",
+                    "description": "Essa transação foi criada e ainda não foi enviada, que dizer que o administrador ainda não recebeu ela.",
+                    "confirmation": {
+                        "send": "Você deseja enviar essa transação para o administrador ?",
+                        "delete": "Você deseja deletar essa transação ?"
+                    }
+                }
+            },
+            "Detail": {
+                "action": {
+                    "title":"Transação Completa.",
+                    "description": "Essa transação já está concluida, o administrador já recolheu o dinheiro e colocou na caixinha."
+                }
+            },
+            "Sended": {
+                "action": {
+                    "title":"Transação quase concluida.",
+                    "description": {
+                        "first": "Essa transação foi enviada e está pronta para ser finalizada, não se esqueca de",
+                        "second": "o dinheiro da caixinha"
+                    },
+                    "confirmation": {
+                        "finish": "Você deseja finalizar essa transação ?",
+                        "cancel": "Você deseja cancelar essa transação ?"
+                    }
+                }
+            }
+        }
+    },
+    
+    "do deposit": "depositar",
+    "do withdraw": "retirar",
+    "deposit": "Deposito",
+    "withdraw": "Retirada",
+    "invalid cashier": "Caixinha inválido",
+    "invalid amount": "Valor inválido",
+    "send": "Enviar",
+    "delete": "Deletar",
+    "finish": "Finalizar",
+    "cancel": "Cancelar",
+    "create a copy": "Criar uma cópia"
+    
+}

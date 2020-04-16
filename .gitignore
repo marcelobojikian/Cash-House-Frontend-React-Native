@@ -1,6 +1,7 @@
 node_modules/**/*
 .expo/*
 npm-debug.*
+*.env
 *.jks
 *.p8
 *.p12
@@ -9,12 +10,6 @@ npm-debug.*
 *.orig.*
 web-build/
 web-report/
-
-assets/icon.png
-assets/splash.png
-src/assets/logo.png
-src/assets/logo@2x.png
-src/assets/logo@3x.png
 
 yarn-error.log
 yarn.lock

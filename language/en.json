@@ -1,0 +1,97 @@
+{
+    "components": {
+        "transactions": {
+            "owner": "Owner %{name}",
+            "created by": "Created by %{name}"
+        }
+    },
+
+    "email": "E-mail",
+    "password": "Password",
+    "email or password is empty": "E-mail or Password is empty",
+    "sign in": "Sign in",
+    "register": "Register",
+    "recover password": "Recover password",
+
+    "total of": "Total of",
+    "transaction":{
+        "one": "1 Transaction",
+        "other": "{{formatted_number}} Transactions",
+        "zero": "0 Transactions"
+    },
+    "created": "Created",
+    "sended": "Sended",
+    "deleted": "Deleted",
+    "finished": "Finished",
+    "back": "Back",
+
+    "cashier": "Cashier",
+    "select an item": "Select an item",
+    "amount": "Amount",
+    "transaction amount": "Transaction amount",
+
+    "alert": {
+        "title": {
+            "confirm operation": "Confirm operation",
+            "invalid field": "Invalid field"
+        },
+        "button": {
+            "ask me later": "Ask me later",
+            "cancel": "Cancel",
+            "confirm": "ok"
+        }
+    },
+
+    "pages": {
+        "Transactions": {
+            "New": {
+                "action": {
+                    "title":"Creating transaction.",
+                    "description": "This transaction will be sent to the person who administers the cashier, as soon as you hand over the money, this transaction will be finalized.",
+                    "confirmation": "Do you want to %{action} in the '%{cashier}' ?"
+                }
+            },
+            "Created": {
+                "action": {
+                    "title":"Pending transaction.",
+                    "description": "This transaction has been created and has not yet been sent, which means that the administrator has not yet received it.",
+                    "confirmation": {
+                        "send": "Do you want to send this transaction to the administrator ?",
+                        "delete": "Do you want to delete this transaction ?"
+                    }
+                }
+            },
+            "Detail": {
+                "action": {
+                    "title":"Complete Transaction.",
+                    "description": "This transaction is already completed, the administrator has already collected the money and put it in the cashier."
+                }
+            },
+            "Sended": {
+                "action": {
+                    "title":"Transaction almost completed.",
+                    "description": {
+                        "first": "This transaction has been sent and is ready to be finalized, don't forget to",
+                        "second": "the money in the cashier"
+                    },
+                    "confirmation": {
+                        "finish": "Do you want to finalize this transaction ?",
+                        "cancel": "Do you want to cancel this transaction ?"
+                    }
+                }
+            }
+        }
+    },
+    
+    "do deposit": "deposit",
+    "do withdraw": "withdraw",
+    "deposit": "Deposit",
+    "withdraw": "Withdraw",
+    "invalid cashier": "Invalid cashier",
+    "invalid amount": "Invalid amount",
+    "send": "Send",
+    "delete": "Delete",
+    "finish": "Finish",
+    "cancel": "Cancel",
+    "create a copy": "Create a copy"
+}
