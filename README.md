@@ -34,9 +34,9 @@ Cash House has the purpose of managing one or more savings cashiers, very common
     4. yarn start
 
 ## How to Use
-    1. Wait for the browser to open the url localhost:XXXXX.
-    2. Write server settings to the .env.example file
-    3. Rename the .env.example file to .env
+    1. Write server settings to the .env.example file
+    2. Rename the .env.example file to .env
+    3. Wait for the browser to open the url localhost:{PORT}.
     4. Read the QR code in your devce.
 
 ## Issues
